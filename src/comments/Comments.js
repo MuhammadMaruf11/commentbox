@@ -11,9 +11,9 @@ import {
 const Comments = ({ commentsUrl, currentUserId }) => {
   const [backendComments, setBackendComments] = useState([]);
   const [activeComment, setActiveComment] = useState(null);
-  const rootComments = backendComments.filter(
-    (backendComment) => backendComment.parentId === null
-  );
+  // const rootComments = backendComments.filter(
+  //   (backendComment) => backendComment.parentId === null
+  // );
   const getReplies = (commentId) =>
     backendComments
       .filter((backendComment) => backendComment.parentId === commentId)
@@ -21,18 +21,21 @@ const Comments = ({ commentsUrl, currentUserId }) => {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-  const addComment = (text, parentId) => {
-    createCommentApi(text, parentId).then((comment) => {
+  const addComment = (text, parentId, preview) => {
+    // console.log( preview)
+    createCommentApi(text, parentId, preview).then((comment) => {
+      // console.log(text, preview);
+      console.log(comment)
       setBackendComments([comment, ...backendComments]);
       setActiveComment(null);
     });
   };
 
-  const updateComment = (text, commentId) => {
-    updateCommentApi(text).then(() => {
+  const updateComment = (text, commentId, preview) => {
+    updateCommentApi(text, preview).then(() => {
       const updatedBackendComments = backendComments.map((backendComment) => {
         if (backendComment.id === commentId) {
-          return { ...backendComment, body: text };
+          return { ...backendComment, body: text, image: preview };
         }
         return backendComment;
       });
@@ -59,10 +62,10 @@ const Comments = ({ commentsUrl, currentUserId }) => {
 
   return (
     <div className="">
-      <div className="text-center mt-4 font-semibold text-2xl">Write comment</div>
+      <div className="mt-4 text-2xl font-semibold text-center">Write comment</div>
       <CommentForm submitLabel="Post" handleSubmit={addComment} />
       <div className="">
-        {rootComments.map((rootComment) => (
+        {backendComments.map((rootComment) => (
           <Comment
             key={rootComment.id}
             comment={rootComment}
@@ -73,8 +76,23 @@ const Comments = ({ commentsUrl, currentUserId }) => {
             deleteComment={deleteComment}
             updateComment={updateComment}
             currentUserId={currentUserId}
+            userId={rootComment.userId}
           />
         ))}
+        {/* {rootComments.map((rootComment) => (
+          <Comment
+            key={rootComment.id}
+            comment={rootComment}
+            replies={getReplies(rootComment.id)}
+            activeComment={activeComment}
+            setActiveComment={setActiveComment}
+            addComment={addComment}
+            deleteComment={deleteComment}
+            updateComment={updateComment}
+            currentUserId={currentUserId}
+            userId={rootComment.userId}
+          />
+        ))} */}
       </div>
     </div>
   );

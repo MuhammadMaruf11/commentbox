@@ -6,18 +6,15 @@ const CommentForm = ({
   submitLabel,
   hasCancelButton = false,
   handleCancel,
+  image,
   initialText = "",
 }) => {
   const [text, setText] = useState(initialText);
   const isTextareaDisabled = text.length === 0;
-  const onSubmit = (event) => {
-    event.preventDefault();
-    handleSubmit(text);
-    setText("");
-  };
+  
 
   const [selectedFile, setSelectedFile] = useState()
-  const [preview, setPreview] = useState()
+  const [preview, setPreview] = useState(image || selectedFile)
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
@@ -27,6 +24,7 @@ const CommentForm = ({
     }
 
     const objectUrl = URL.createObjectURL(selectedFile)
+    // console.log(objectUrl)
     setPreview(objectUrl)
 
     // free memory when ever this component is unmounted
@@ -42,13 +40,20 @@ const CommentForm = ({
     // I've kept this example simple by using the first image instead of multiple
     setSelectedFile(e.target.files[0])
   }
+  const onSubmit = (event) => {
+    event.preventDefault();
+    // console.log(preview);
+    handleSubmit(text, '' , preview);
+    setText("");
+    setPreview('');
+  };
   return (
     <div className="py-10">
       <form onSubmit={onSubmit}>
 
 
         <div className="text-center">
-          <textarea
+          <textarea required={false}
             className="w-[90%] mb-4 text-black text-xl h-32 rounded-xl "
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -58,12 +63,12 @@ const CommentForm = ({
           {selectedFile && <img className="max-w-40 max-h-40" src={preview} alt="" />}
         </div>
         <div className="flex flex-wrap items-center">
-          <button className="ml-20 cursor-pointer w-20 text-xs uppercase rounded-xl h-8 text-black bg-cyan-300" disabled={isTextareaDisabled}>
+          <button className="w-20 h-8 ml-20 text-xs text-black uppercase cursor-pointer rounded-xl bg-cyan-300" disabled={isTextareaDisabled}>
             {submitLabel}
           </button>
           <div>
-            <label className="cursor-pointer w-24 " htmlFor="upFile">
-              <img className="max-w-full block w-16" src={camera} alt="" />
+            <label className="w-24 cursor-pointer " htmlFor="upFile">
+              <img className="block w-16 max-w-full" src={camera} alt="" />
             </label>
             <input id="upFile" className="hidden" accept="image/png, video/wmv, video/avi, video/mkv, video/mp4, image/jpg, image/jpeg" type="file" onChange={onSelectFile} />
 
@@ -75,7 +80,7 @@ const CommentForm = ({
         {hasCancelButton && (
           <button
             type="button"
-            className=""
+            className="inline-block w-20 h-8 text-xs leading-8 text-center text-black uppercase cursor-pointer rounded-xl bg-cyan-300"
             onClick={handleCancel}
           >
             Cancel

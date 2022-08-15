@@ -31,31 +31,33 @@ const Comment = ({
   const exactTime = new Date(comment.createdAt).toLocaleTimeString();
   return (
     <div>
-      <div key={comment.id} className=" mx-auto w-[90%]">
-        <div className={`flex flex-wrap items-center mb-4 ${userId === currentUserId ? `justify-end` : ``}`}>
+      <div key={comment.id} className={`mx-auto w-[90%]`}>
+        <div className={`flex flex-wrap items-center mb-4 ${userId === '0' ? `justify-end` : ``}`}>
           <img className="w-8 h-8 mr-4 rounded-full" src="/user-icon.png" alt="" />
           <div className="inline-block text-sm">{comment.username}</div>
           <div className="ml-4 text-xs">{createdAt}</div>
           <div className="ml-4 text-xs">{exactTime}</div>
         </div>
-        <div className="mb-8">
-          {!isEditing && <div className="w-auto h-auto mb-4 text-xs break-all"><p> {comment.image && <img className="w-40 h-auto" src={comment.image} alt="" />} <br /> {comment.body} </p></div>}
+        <div className={`mb-8 ${userId === '0' ? `ml-auto` : ``}`}>
+          {!isEditing && <div className={`h-auto mb-4 text-xs break-all w-fit ${userId === '0' ? 'ml-auto' : ''}`}><p className="text-start max-w-max"> {comment.image && <img className="max-w-[240px] max-h-40" src={comment.image} alt="" />} <br /> {comment.body} </p></div>}
           {isEditing && (
             <CommentForm
               submitLabel="Update"
               hasCancelButton
               initialText={comment.body}
-              image = {comment.preview}
-              handleSubmit={(text, preview) => updateComment(text, comment.id, preview)}
+              image={comment.preview}
+              handleSubmit={(text, preview) => updateComment(text, comment.id, preview)
+              }
               handleCancel={() => {
                 setActiveComment(null);
+
               }}
             />
           )}
           <div className="flex mb-10">
             {canReply && (
               <div
-                className="inline-block w-20 h-8 mr-20 text-xs leading-8 text-center text-black uppercase cursor-pointer rounded-xl bg-cyan-300"
+                className={`inline-block w-20 mr-10 h-8 text-xs leading-8 text-center text-black uppercase cursor-pointer rounded-xl bg-cyan-300 ${userId === '0' ? 'ml-auto' : ''}`}
                 onClick={() =>
                   setActiveComment({ id: comment.id, type: "replying" })
                 }
@@ -65,7 +67,7 @@ const Comment = ({
             )}
             {canEdit && (
               <div
-                className="inline-block w-20 h-8 mr-20 text-xs leading-8 text-center text-black uppercase cursor-pointer rounded-xl bg-cyan-300"
+                className="inline-block w-20 h-8 mr-10 text-xs leading-8 text-center text-black uppercase cursor-pointer rounded-xl bg-cyan-300"
                 onClick={() =>
                   setActiveComment({ id: comment.id, type: "editing" })
                 }

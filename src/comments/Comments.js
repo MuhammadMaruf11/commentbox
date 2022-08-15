@@ -25,7 +25,6 @@ const Comments = ({ commentsUrl, currentUserId }) => {
     // console.log( preview)
     createCommentApi(text, parentId, preview).then((comment) => {
       // console.log(text, preview);
-      console.log(comment)
       setBackendComments([comment, ...backendComments]);
       setActiveComment(null);
     });
